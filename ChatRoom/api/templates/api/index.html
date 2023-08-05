@@ -24,7 +24,7 @@
     <div class="form-floating">
   <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 500px">
     {% for chat in chats %}
-        {{chat.content}}
+        {{chat.user }} : {{chat.content}} 
     {%endfor%}
   </textarea>
 </div><br>

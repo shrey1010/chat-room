@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 import json
 from .models import Group,Chat
 
+
 class MySyncConsumer(SyncConsumer):
 
     def websocket_connect(self,event):
@@ -17,6 +18,7 @@ class MySyncConsumer(SyncConsumer):
 
     def websocket_receive(self, event):
         print("websocket message recieved",event['text'])
+        self.user = self.scope["user"]
         # for i in range(10):
         #     self.send({
         #         'type': 'websocket.send',
@@ -29,6 +31,7 @@ class MySyncConsumer(SyncConsumer):
             data = json.loads(event['text'])
             group = Group.objects.get(name=groupname)
             chat = Chat(
+                user= self.user,
                 content = data.get('msg'),
                 group = group
             )
