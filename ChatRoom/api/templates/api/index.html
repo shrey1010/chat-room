@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>chat-room</title>
+  </head>
+  <body>
+    <br>
+    
+    <nav class="navbar navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+     Group Name : {{groupname}}
+    </a>
+  </div>
+</nav><br>
+    <div class="form-floating">
+  <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 500px">
+    {% for chat in chats %}
+        {{chat.content}}
+    {%endfor%}
+  </textarea>
+</div><br>
+  <div class="input-group flex-nowrap">
+  <span class="input-group-text" id="addon-wrapping">@</span>
+  <input type="text" class="form-control" id="chat-message-input" placeholder="Type your message..." aria-label="Username" aria-describedby="addon-wrapping">
+</div>
+<br>
+<button type="button" class="btn btn-primary" id="chat-message-submit">Send</button>
+
+    <h2 id="data"></h2>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+
+    {{groupname|json_script:"group-name"}}
+
+    <script>
+        const  groupname = JSON.parse(document.getElementById('group-name').textContent)
+        {% comment %} var ws = new WebSocket('ws://127.0.0.1:8000/ws/sc/'); {% endcomment %}
+        var ws = new WebSocket('ws://'+ window.location.host + '/ws/sc/' + groupname +'/'
+
+        );
+        ws.onopen = function() {
+          console.log('websocket connection open...')
+         // ws.send('Hi, message from client')
+        }
+        ws.onmessage = function(event) {
+          console.log('websocket recieved from server ...',event)
+          const data = JSON.parse(event.data) 
+          document.querySelector("#floatingTextarea2").value += (data.user + ': ' + data.msg + '\n')
+          
+        }
+        ws.onerror = function(event) {
+          console.log('websocket error ...',event)
+        }
+        ws.onclose = function(event) {
+          console.log('websocket connection closed ...',event)
+        }
+        document.getElementById('chat-message-submit').onclick = function(event) {
+            const messageInputDom = document.getElementById('chat-message-input')
+            const message = messageInputDom.value
+            ws.send(JSON.stringify({
+              'msg':message
+            }))
+            messageInputDom.value = ''
+        }
+
+    </script>
+  </body>
+</html>
