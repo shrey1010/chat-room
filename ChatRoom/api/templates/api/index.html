@@ -56,7 +56,7 @@
         ws.onmessage = function(event) {
           console.log('websocket recieved from server ...',event)
           const data = JSON.parse(event.data) 
-          document.querySelector("#floatingTextarea2").value += (data.user + ': ' + data.msg + '\n')
+          document.querySelector("#floatingTextarea2").value += (data.user + ': ' + data.message + '\n')
           
         }
         ws.onerror = function(event) {
